@@ -21,10 +21,12 @@ const filterMW = (req, res, next) => {
   req.query.city = req.query.city ? req.query.city : "";
   req.query.isCourse = req.query.course ? true : false;
   req.query.isExam = req.query.exam ? true : false;
+  req.query.exam = req.query.exam ? req.query.exam.replace(" ", "+") : "";
   next();
 };
 
 app.get("/findColleges", filterMW, async (req, res) => {
+  console.log(req.query.exam);
   connection
     .aggregate()
     .addFields({ isCourse: req.query.isCourse, isExam: req.query.isExam })
