@@ -20,8 +20,8 @@ const filterMW = (req, res, next) => {
   req.query.state = req.query.state ? req.query.state : "";
   req.query.city = req.query.city ? req.query.city : "";
   req.query.isCourse = req.query.course ? true : false;
-  req.query.isExam = req.query.exam ? true : false;
-  req.query.exam = req.query.exam ? req.query.exam.replace(" ", "+") : "";
+  req.query.isExam = req.query.exams ? true : false;
+  req.query.exam = req.query.exams ? req.query.exams.replace(" ", "+") : "";
   next();
 };
 
