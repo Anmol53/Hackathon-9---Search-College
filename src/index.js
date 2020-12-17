@@ -19,29 +19,30 @@ const filterMW = (req, res, next) => {
     filterObj.maxFees = { $lt: parseInt(req.query.maxFees) };
   }
   if (req.query.name) {
-    filterObj.name = { $regex: req.query.name };
+    filterObj.name = { $regex: req.query.name, $options: "i" };
   }
   if (req.query.state) {
-    filterObj.state = { $regex: req.query.state };
+    filterObj.state = { $regex: req.query.state, $options: "i" };
   }
   if (req.query.city) {
-    filterObj.city = { $regex: req.query.city };
+    filterObj.city = { $regex: req.query.city, $options: "i" };
   }
   if (req.query.exam) {
     filterObj.exam = { $in: req.query.exam.replace(" ", "+") };
   }
   if (req.query.course) {
-    filterObj.course = req.query.course;
+    filterObj.course = { $regex: `^${req.query.course}$`, $options: "i" };
   }
   next();
 };
 
 app.get("/findColleges", filterMW, async (req, res) => {
-  console.log(req.query.exam);
-  connection
+  console.log(filterObj);
+  await connection
     .aggregate()
     .match(filterObj)
     .exec((err, result) => {
+      filterObj = {};
       res.send(result);
     });
 });
