@@ -34,7 +34,7 @@ const filterMW = (req, res, next) => {
     };
   }
   if (req.query.course) {
-    filterObj.course = { $regex: `^${req.query.course}$`, $options: "i" };
+    filterObj.course = { $regex: req.query.course, $options: "i" };
   }
   next();
 };
