@@ -9,19 +9,30 @@ app.use(express.json());
 const { connections } = require("mongoose");
 const { connection } = require("./connector");
 
+let filterObj = {};
+
 const filterMW = (req, res, next) => {
-  req.query.minPackage = !isNaN(req.query.minPackage)
-    ? parseInt(req.query.minPackage)
-    : 0;
-  req.query.maxFees = !isNaN(req.query.maxFees)
-    ? parseInt(req.query.maxFees)
-    : 5000;
-  req.query.name = req.query.name ? req.query.name : "";
-  req.query.state = req.query.state ? req.query.state : "";
-  req.query.city = req.query.city ? req.query.city : "";
-  req.query.isCourse = req.query.course ? true : false;
-  req.query.isExam = req.query.exams ? true : false;
-  req.query.exam = req.query.exams ? req.query.exams.replace(" ", "+") : "";
+  if (!isNaN(req.query.minPackage)) {
+    filterObj.minPackage = { $gt: parseInt(req.query.minPackage) };
+  }
+  if (!isNaN(req.query.maxFees)) {
+    filterObj.maxFees = { $lt: parseInt(req.query.maxFees) };
+  }
+  if (req.query.name) {
+    filterObj.name = { $regex: req.query.name };
+  }
+  if (req.query.state) {
+    filterObj.state = { $regex: req.query.state };
+  }
+  if (req.query.city) {
+    filterObj.city = { $regex: req.query.city };
+  }
+  if (req.query.exam) {
+    filterObj.exam = { $in: req.query.exam.replace(" ", "+") };
+  }
+  if (req.query.course) {
+    filterObj.course = req.query.course;
+  }
   next();
 };
 
@@ -29,28 +40,7 @@ app.get("/findColleges", filterMW, async (req, res) => {
   console.log(req.query.exam);
   connection
     .aggregate()
-    .addFields({ isCourse: req.query.isCourse, isExam: req.query.isExam })
-    .match({
-      $and: [
-        { maxFees: { $lt: req.query.maxFees } },
-        { minPackage: { $gt: req.query.minPackage } },
-        { name: { $regex: req.query.name } },
-        { city: { $regex: req.query.city } },
-        { state: { $regex: req.query.state } },
-        { $or: [{ isCourse: false }, { course: req.query.course }] },
-        { $or: [{ isExam: false }, { exam: { $in: [req.query.exam] } }] },
-      ],
-    })
-    .project({
-      _id: 0,
-      name: "$name",
-      city: "$city",
-      state: "$state",
-      exam: "$exam",
-      course: "$course",
-      maxFees: "$maxFees",
-      minPackage: "$minPackage",
-    })
+    .match(filterObj)
     .exec((err, result) => {
       res.send(result);
     });
