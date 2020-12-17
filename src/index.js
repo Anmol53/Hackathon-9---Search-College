@@ -29,7 +29,7 @@ const filterMW = (req, res, next) => {
   }
   if (req.query.exam) {
     filterObj.exam = {
-      $regex: `^${req.query.exam}$`,
+      $regex: req.query.exam,
       $options: "i",
     };
   }
