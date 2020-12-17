@@ -42,7 +42,6 @@ const filterMW = (req, res, next) => {
 };
 
 app.get("/findColleges", filterMW, async (req, res) => {
-  console.log(filterObj);
   await connection
     .aggregate()
     .match(filterObj)
