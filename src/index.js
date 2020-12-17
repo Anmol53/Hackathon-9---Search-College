@@ -28,7 +28,7 @@ const filterMW = (req, res, next) => {
     filterObj.city = { $regex: req.query.city, $options: "i" };
   }
   if (req.query.exam) {
-    filterObj.exam = { $in: req.query.exam.replace(" ", "+") };
+    filterObj.exam = { $in: [req.query.exam.replace(" ", "+")] };
   }
   if (req.query.course) {
     filterObj.course = { $regex: `^${req.query.course}$`, $options: "i" };
