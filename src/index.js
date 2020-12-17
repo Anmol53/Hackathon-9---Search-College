@@ -13,10 +13,10 @@ let filterObj = {};
 
 const filterMW = (req, res, next) => {
   if (!isNaN(req.query.minPackage)) {
-    filterObj.minPackage = { $gt: parseInt(req.query.minPackage) };
+    filterObj.minPackage = { $gt: parseFloat(req.query.minPackage) };
   }
   if (!isNaN(req.query.maxFees)) {
-    filterObj.maxFees = { $lt: parseInt(req.query.maxFees) };
+    filterObj.maxFees = { $lt: parseFloat(req.query.maxFees) };
   }
   if (req.query.name) {
     filterObj.name = { $regex: req.query.name, $options: "i" };
@@ -29,10 +29,8 @@ const filterMW = (req, res, next) => {
   }
   if (req.query.exam) {
     filterObj.exam = {
-      $elemMatch: {
-        $regex: `^${req.query.exam}$`,
-        $options: "i",
-      },
+      $regex: `^${req.query.exam}$`,
+      $options: "i",
     };
   }
   if (req.query.course) {
