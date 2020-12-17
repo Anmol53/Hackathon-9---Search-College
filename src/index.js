@@ -30,7 +30,7 @@ const filterMW = (req, res, next) => {
   if (req.query.exam) {
     filterObj.exam = {
       $elemMatch: {
-        $regex: `^${req.query.exam.replace(" ", "+")}$`,
+        $regex: `^${req.query.exam}$`,
         $options: "i",
       },
     };
